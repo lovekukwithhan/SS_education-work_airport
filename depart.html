@@ -19,18 +19,98 @@
 		</div>
 
 		<div data-role="content" class="content">
-		<br>
 		<h4>데이터를 넣을곳</h4>
-		<br></br>
-		<div class="depart-su"></div>
+		<ul data-role="listview" class="depart-su"></ul>
 	</div>
 	</div>
 
 	<script>
-		function gugudan(n){
-		for(var i = 1; i <= 9; i++){
-			console.log(n + "X" + j + " " + (n * j));
+		$(function() {
+		var key = "q8glIeFohmlVIqvGgRa3o2CU4jNXrk8DfQPh9n3s87BqBYhjQ0A0qDLCXEFfJ7GTWQHLMh%2F78CWpoTjvBTyLZA%3D%3D"
+		var url = 'http://openapi.airport.kr/openapi/service/StatusOfDepartures/getDeparturesCongestion'; /*URL*/
+		url += '?' + encodeURIComponent('ServiceKey') + '=' + key; /*Service Key*/
+		url += '&' + encodeURIComponent('terno') + '=' + encodeURIComponent('1'); /*터미널 구분 1: 1터미널 */
+
+		function backImg(n) {
+			var back; var backImg = "";
+			if (n < 100 ) { return ""; }
+			back = parseInt( n / 100 );
+
+			for (let i = 0; i < back; i++) {
+				backImg += "<img src= './img/people-bak.png' width='40' height='40' >"
+			}
+			return backImg;
 		}
+
+		function sipImg(n) {
+			var sip; var sipImg = "";
+			if ( n >= 100 ) {
+				var back = parseInt( n / 100 );
+				n -= (back * 100);
+			}
+			if (n < 10 ) { return ""; }
+			sip = parseInt( n / 10 );
+
+			for (let i = 0; i < sip; i++) {
+				sipImg += "<img src= './img/people-sip.png' width='30' height='30' >"
+			}
+			return sipImg;
+		}
+
+
+		function info(data) {
+		var res = $(data).find("item");
+		var gateinfo1 = parseInt($(res).find("gateinfo1").text());
+		var gateinfo2 = parseInt($(res).find("gateinfo2").text());
+		var gateinfo3 = parseInt($(res).find("gateinfo3").text());
+		var gateinfo4 = parseInt($(res).find("gateinfo4").text());
+
+		var list =
+		"<br>"+
+		"<li>" + backImg(gateinfo1) + sipImg(gateinfo1) + gateinfo1 + "명" + "</li>" +
+		"<li>" + backImg(gateinfo2) + sipImg(gateinfo2) + gateinfo2 + "명" + "</li>" +
+		"<li>" + backImg(gateinfo3) + sipImg(gateinfo3) + gateinfo3 + "명" + "</li>" +
+		"<li>" + backImg(gateinfo4) + sipImg(gateinfo4) + gateinfo4 + "명" + "</li>";
+
+		$(".content ul").html(list);
+		//text와 html의 차이점
+		//text는 html도 글씨로 인식하고 html은 태그로 인식
+		
+
+		}
+
+
+		function time(data) {
+		console.log(data);
+		var res = $(data).find("item");
+		var cgtdt = $(res).find("cgtdt").text();
+		var cgthm = $(res).find("cgthm").text();
+		var year = cgtdt.substring(0, 4);
+		var month = cgtdt.substring(4, 6);
+		var day = cgtdt.substring(6, 8);
+		
+		var hour = cgthm.substring(0, 2);
+		var minute = cgthm.substring(2, 4);
+
+		var time =  year + "년 " + month + "월 " + day + "일 " + hour + "시 " + minute + "분";
+
+		$(".content h4").text(time);
+		info(data);
+		}
+
+
+		function request(){
+		$.ajax({
+			url: url,
+			success: function(data){
+			time(data);
+			}
+		});
+		}
+		request();
+		});
+		
+
 	</script>
 </body>
 </html>
